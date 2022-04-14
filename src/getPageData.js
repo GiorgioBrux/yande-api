@@ -83,6 +83,8 @@ async function getPostData(tags = [], limit = 100, filter = {}) { // default val
             })
         })
 
+        if (count === 0) return [];
+
         if (count < limit)
             await get(page + thread, newCookie)
 
