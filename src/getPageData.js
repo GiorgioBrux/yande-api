@@ -6,7 +6,7 @@ const baseURL = "https://yande.re/post?"
 
 /**
  * @param {Int} page
- * @return {Array}  
+ * @return {Array}
  * @callback err
  */
 function getPostByPageNum(baseURL, page, setCookie) {
@@ -16,7 +16,7 @@ function getPostByPageNum(baseURL, page, setCookie) {
 
         const URL = baseURL + "&page=" + page
         const headers = utils.createHeaders(setCookie,page);
-    
+
         request({
             method:"GET",
             headers: headers,
@@ -25,10 +25,10 @@ function getPostByPageNum(baseURL, page, setCookie) {
             if (err) return console.log(err)
 
             let result = []
-    
+
             /**
              * Tách các row trong html thành một String Array.
-             * lọc các đoạn "Post.register" và xử lý để chuyển về dạng JsonObject.  
+             * lọc các đoạn "Post.register" và xử lý để chuyển về dạng JsonObject.
              */
             html.split("\n")
                 .forEach(row => {
@@ -40,19 +40,18 @@ function getPostByPageNum(baseURL, page, setCookie) {
                     }
                 })
 
-            resolve({setCookie: response.headers["set-cookie"], result})    
+            resolve({setCookie: response.headers["set-cookie"], result})
         })
 
-    })   
+    })
 }
 
 /**
- * @param {StringArray} tags 
- * @param {StringArray} filter 
- * @param {Int} limit
- * @callback {Object} post
+ * @param {Array} tags
+ * @param {Array} filter
+ * @param {number} limit
  */
-async function getPostData (tags = [], limit = 100,filter = {}, callback) { // default value
+async function getPostData (tags = [], limit = 100,filter = {}) { // default value
 
     /* thêm tag vào url */
     const URL = baseURL + "&tags=" + tags.join("+")
@@ -65,29 +64,31 @@ async function getPostData (tags = [], limit = 100,filter = {}, callback) { // d
 
     (async function get(page, setCookie) {
         let arrayPromise = []
-        for (let i = page + 0; i < page + thread; ++i) {
-            
+        for (let i = page; i < page + thread; ++i) {
+
             arrayPromise.push(getPostByPageNum(URL, i, setCookie))
         }
 
         let res = await Promise.all(arrayPromise);
-        
+
         let newCookie = "vote=1; " + res[res.length-1].setCookie.map(el => el.split("; ")[0]).join("; ")
 
         res.forEach(data => {
-        
-            data= utils.filterPost(data.result, filter) 
-            
+
+            data= utils.filterPost(data.result, filter)
+
             data.forEach((post) => {
-                if (++count < limit) 
-                    callback(post)
+                result.push(post);
+                count += 1;
             })
         })
-        
+
         if (count < limit)
             get(page+thread, newCookie)
 
     })(startPage, setCookie)
+
+    return result;
 
 }
 

@@ -2,6 +2,8 @@
 ```
 npm install yande-api
 ```
+Slightly modified version of the original to remove callback.<br>
+
 # Usage
 ```javascript
 
