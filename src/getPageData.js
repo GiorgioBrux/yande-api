@@ -10,15 +10,15 @@ const baseURL = "https://yande.re/post?"
  * @callback err
  */
 function getPostByPageNum(baseURL, page, setCookie) {
-    return new Promise ((resolve) => {
+    return new Promise((resolve) => {
 
         page = (page > 0) ? page : 1
 
         const URL = baseURL + "&page=" + page
-        const headers = utils.createHeaders(setCookie,page);
+        const headers = utils.createHeaders(setCookie, page);
 
         request({
-            method:"GET",
+            method: "GET",
             headers: headers,
             uri: URL
         }, (err, response, html) => {
@@ -34,8 +34,8 @@ function getPostByPageNum(baseURL, page, setCookie) {
                 .forEach(row => {
                     if (row.indexOf("Post.register(") > -1) {
                         let post = JSON.parse(
-                                row.trim().slice("Post.register(".length, row.trim().length-1)
-                            )
+                            row.trim().slice("Post.register(".length, row.trim().length - 1)
+                        )
                         result.push(post)
                     }
                 })
@@ -51,7 +51,7 @@ function getPostByPageNum(baseURL, page, setCookie) {
  * @param {Array} filter
  * @param {number} limit
  */
-async function getPostData (tags = [], limit = 100,filter = {}) { // default value
+async function getPostData(tags = [], limit = 100, filter = {}) { // default value
 
     /* thêm tag vào url */
     const URL = baseURL + "&tags=" + tags.join("+")
