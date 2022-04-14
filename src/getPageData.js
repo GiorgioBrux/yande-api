@@ -5,7 +5,7 @@ const utils = require("./utils")
 const baseURL = "https://yande.re/post?"
 
 /**
- * @param {Int} page
+ * @param {number} page
  * @return {Array}
  * @callback err
  */
@@ -62,7 +62,7 @@ async function getPostData (tags = [], limit = 100,filter = {}) { // default val
     let thread = 20
     let result = [];
 
-    (async function get(page, setCookie) {
+    await (async function get(page, setCookie) {
         let arrayPromise = []
         for (let i = page; i < page + thread; ++i) {
 
@@ -71,11 +71,11 @@ async function getPostData (tags = [], limit = 100,filter = {}) { // default val
 
         let res = await Promise.all(arrayPromise);
 
-        let newCookie = "vote=1; " + res[res.length-1].setCookie.map(el => el.split("; ")[0]).join("; ")
+        let newCookie = "vote=1; " + res[res.length - 1].setCookie.map(el => el.split("; ")[0]).join("; ")
 
         res.forEach(data => {
 
-            data= utils.filterPost(data.result, filter)
+            data = utils.filterPost(data.result, filter)
 
             data.forEach((post) => {
                 result.push(post);
@@ -84,7 +84,7 @@ async function getPostData (tags = [], limit = 100,filter = {}) { // default val
         })
 
         if (count < limit)
-            get(page+thread, newCookie)
+            await get(page + thread, newCookie)
 
     })(startPage, setCookie)
 
